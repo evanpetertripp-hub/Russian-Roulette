@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Russian Roulette Game</title>
+<style>
+  body {
+    background: #0f0f0f;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+  }
+
+  h1 {
+    margin-bottom: 10px;
+  }
+
+  #setup {
+    margin-bottom: 20px;
+  }
+
+  input {
+    padding: 10px;
+    font-size: 18px;
+    width: 120px;
+  }
+
+  button {
+    padding: 18px;
+    margin: 8px;
+    font-size: 20px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    min-width: 80px;
+  }
+
+  .alive {
+    background: #1db954;
+    color: black;
+  }
+
+  .dead {
+    background: #ff3b30;
+    color: white;
+    text-decoration: line-through;
+  }
+
+  #players {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  #log {
+    margin-top: 20px;
+    max-height: 200px;
+    overflow-y: auto;
+    text-align: left;
+    border-top: 1px solid #333;
+    padding-top: 10px;
+  }
+
+  #resetBtn {
+    margin-top: 15px;
+    background: #444;
+    color: white;
+  }
+</style>
+</head>
+<body>
+
+<h1>Russian Roulette</h1>
+
+<div id="setup">
+  <input id="playerCount" type="number" min="2" max="26" placeholder="Players"/>
+  <button onclick="startGame()">Start</button>
+</div>
+
+<div id="players"></div>
+
+<button id="resetBtn" onclick="resetGame()" style="display:none;">Reset Game</button>
+
+<div id="log"></div>
+
+<audio id="clickSound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3"></audio>
+<audio id="gunSound" src="https://www.soundjay.com/mechanical/sounds/gunshot-01.mp3"></audio>
+
+<script>
+let players = [];
+let currentTurn = 0;
+let bulletIndex = null;
+let gameActive = false;
+
+function startGame() {
+  const count = parseInt(document.getElementById("playerCount").value);
+  if (!count || count < 2) return;
+
+  players = [];
+  for (let i = 0; i < count; i++) {
+    players.push({
+      name: String.fromCharCode(65 + i),
+      alive: true
+    });
+  }
+
+  gameActive = true;
+  document.getElementById("resetBtn").style.display = "inline-block";
+  log("Game started with " + count + " players");
+
+  nextRound();
+  render();
+}
+
+function nextRound() {
+  const alivePlayers = players.filter(p => p.alive);
+  bulletIndex = Math.floor(Math.random() * alivePlayers.length);
+  currentTurn = 0;
+}
+
+function render() {
+  const container = document.getElementById("players");
+  container.innerHTML = "";
+
+  players.forEach((player, index) => {
+    const btn = document.createElement("button");
+    btn.textContent = player.name;
+
+    btn.className = player.alive ? "alive" : "dead";
+    btn.disabled = !player.alive || !gameActive;
+
+    btn.onclick = () => takeTurn(player);
+
+    container.appendChild(btn);
+  });
+}
+
+function takeTurn(player) {
+  if (!gameActive || !player.alive) return;
+
+  document.getElementById("clickSound").play();
+
+  const alivePlayers = players.filter(p => p.alive);
+
+  if (alivePlayers[currentTurn].name !== player.name) {
+    log("Not " + player.name + "'s turn");
+    return;
+  }
+
+  if (currentTurn === bulletIndex) {
+    // player dies
+    player.alive = false;
+    document.getElementById("gunSound").play();
+    log("💥 " + player.name + " is out");
+
+    const remaining = players.filter(p => p.alive);
+
+    if (remaining.length === 1) {
+      log("🏆 " + remaining[0].name + " wins!");
+      gameActive = false;
+      render();
+      return;
+    }
+
+    nextRound();
+  } else {
+    log(player.name + " survives");
+    currentTurn++;
+  }
+
+  render();
+}
+
+function log(message) {
+  const logBox = document.getElementById("log");
+  const entry = document.createElement("div");
+  entry.textContent = message;
+  logBox.prepend(entry);
+}
+
+function resetGame() {
+  players = [];
+  gameActive = false;
+  document.getElementById("players").innerHTML = "";
+  document.getElementById("log").innerHTML = "";
+  document.getElementById("resetBtn").style.display = "none";
+}
+</script>
+
+</body>
+</html>
