@@ -4,7 +4,74 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Russian Roulette Game</title>
-<style>
+<style>body {
+  background: radial-gradient(circle at top, #1a1a1a, #000000);
+  color: white;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 20px;
+}
+
+h1 {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+#players {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+button {
+  padding: 22px;
+  font-size: 24px;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  min-width: 90px;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+}
+
+button:hover {
+  transform: scale(1.08);
+}
+
+button:active {
+  transform: scale(0.95);
+}
+
+.alive {
+  background: linear-gradient(145deg, #00ff88, #00aa55);
+  color: black;
+}
+
+.dead {
+  background: linear-gradient(145deg, #ff2a2a, #990000);
+  color: white;
+  opacity: 0.6;
+  text-decoration: line-through;
+}
+
+#log {
+  margin-top: 25px;
+  max-height: 220px;
+  overflow-y: auto;
+  text-align: left;
+  border-top: 1px solid #333;
+  padding-top: 10px;
+  font-size: 16px;
+}
+
+#resetBtn {
+  margin-top: 20px;
+  background: #444;
+  color: white;
+}
   body {
     background: #0f0f0f;
     color: #fff;
